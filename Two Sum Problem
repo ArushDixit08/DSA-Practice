@@ -1,0 +1,95 @@
+//Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
+//You may assume that each input would have exactly one solution, and you may not use the same element twice.
+//You can return the answer in any order.
+//Example 1:
+//Input: nums = [2,7,11,15], target = 9
+//Output: [0,1]
+//Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].
+//Example 2:
+//Input: nums = [3,2,4], target = 6
+//Output: [1,2]
+//Example 3:
+//Input: nums = [3,3], target = 6
+//Output: [0,1]
+//Constraints:
+//2 <= nums.length <= 104
+//-109 <= nums[i] <= 109
+//-109 <= target <= 109
+//Only one valid answer exists.
+//Follow-up: Can you come up with an algorithm that is less than O(n2) time complexity?
+
+Brute force approach->
+
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {                       //Making a vector return type with function name twoSum and paramaters vector<int>& nums(Passing the vector by reference to original vector instead of creating a copy to save memory) and int target (our target variable). 
+        int n = nums.size();                                                  
+
+        for(int i = 0; i < n; i++) {                                          
+            for(int j = i + 1; j < n; j++) {
+                if(nums[i] + nums[j] == target) {
+                    return {i, j};
+                }
+            }
+        }
+
+        return {};                                                            //This should never execute because the problem guarantees exactly one solution, but C++ requires a return value.
+    }
+};
+
+
+Complexity ->
+Time: O(n²)
+Space: O(1)
+
+
+Optimal Approach (Hash Map) ->
+
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        unordered_map<int, int> mp;                    // mp stores value (from nums) -> index ( index of that number), just like dictionary in python but C++ requires the key and value types to be specified.
+
+        for(int i = 0; i < nums.size(); i++) {
+            int complement = target - nums[i];        //if 2(complement) + 7 (num(i)) = 9(target), then we can rewrite it as 2 = 9 - 7
+ 
+            if(mp.find(complement) != mp.end()) {     // find() returns mp.end() when the key doesn't exist, so 'mp.find(complement) != mp.end()' is the C++ way of saying that complement exists in mp.
+                return {mp[complement], i};
+            }
+
+            mp[nums[i]] = i;
+        }
+
+        return {};
+    }
+};
+
+Complexity ->
+Time = O(n)
+Space = O(n)
+
+
+
+Corner cases ->
+
+1. Duplicate Values
+Example
+nums = [3,3]
+target = 6
+Correct answer:
+[0,1]
+
+If we write:
+mp[nums[i]] = i;
+if(mp.find(complement) != mp.end())
+we will overwrite the first 3 before checking and end up using the same element twice.
+
+Correct approach:
+if(mp.find(complement) != mp.end())
+    return {mp[complement], i};
+mp[nums[i]] = i;
+
+2. Negative Numbers
+3. Zero Values
+
+
