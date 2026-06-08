@@ -1,0 +1,69 @@
+Brute Force Approach
+
+class Solution {
+public:
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        vector<vector<string>> result;
+        vector<bool> visited(strs.size(), false);
+        for(int i = 0; i < strs.size(); i++) {
+            if(visited[i])
+                continue;
+            vector<string> group;
+            string sorted_i = strs[i];
+            sort(sorted_i.begin(), sorted_i.end());
+            group.push_back(strs[i]);
+            visited[i] = true;
+            for(int j = i + 1; j < strs.size(); j++) {
+                string sorted_j = strs[j];
+                sort(sorted_j.begin(), sorted_j.end());
+                if(sorted_i == sorted_j) {
+                    group.push_back(strs[j]);
+                    visited[j] = true;
+                }
+            }
+            result.push_back(group);
+        }        return result;
+    }
+};
+
+
+Complexity Analysis
+Time Complexity -> O(k log k)
+where k = average string length.
+Space Complexity -> O(n)
+
+Optimal Approach (Hash Map)
+
+class Solution {
+public:
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        unordered_map<string, vector<string>> mp;
+        for(string word : strs) {
+            string sortedWord = word;
+            sort(sortedWord.begin(), sortedWord.end());
+            mp[sortedWord].push_back(word);
+        }
+        vector<vector<string>> result;
+        for(auto& pair : mp) {
+            result.push_back(pair.second);
+        }
+        return result;
+    }
+};
+
+Complexity Analysis
+Time Complexity
+For each string:
+O(k log k)
+For all strings:
+O(n × k log k)
+Space Complexity
+O(n × k)
+
+
+Corner Cases
+1. Empty String
+2. Single String
+3. Duplicate Strings
+4. All Strings Are Anagrams
+5. No Strings Are Anagrams
