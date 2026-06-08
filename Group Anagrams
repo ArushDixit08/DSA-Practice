@@ -47,7 +47,7 @@ public:
             mp[sortedWord].push_back(word);
         }
         vector<vector<string>> result;
-        for(auto& pair : mp) {
+        for(auto& pair : mp) {                                      //Iterate through every key-value pair in the hash map mp, where pair.first is the key and pair.second is the value.
             result.push_back(pair.second);
         }
         return result;
