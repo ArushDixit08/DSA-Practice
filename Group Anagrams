@@ -28,9 +28,12 @@ public:
 
 
 Complexity Analysis
-Time Complexity -> O(k log k)
-where k = average string length.
+Time Complexity -> O(n² × k log k)
+where:
+n = number of strings
+k = average string length
 Space Complexity -> O(n)
+
 
 Optimal Approach (Hash Map)
 
