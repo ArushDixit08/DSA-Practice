@@ -1,0 +1,116 @@
+//Same Tree//
+//Given the roots of two binary trees p and q, write a function to check if they are the same or not.
+//Two binary trees are considered the same if they are structurally identical, and the nodes have the same value.
+//Example 1:
+//Input: p = [1,2,3], q = [1,2,3]
+//Output: true
+//Example 2:
+//Input: p = [1,2], q = [1,null,2]
+//Output: false
+//Example 3:
+//Input: p = [1,2,1], q = [1,1,2]
+//Output: false
+
+Brute force approach -> (It is recursive but not memory efficient)
+
+class Solution {
+public:
+    void preorder(TreeNode* root, vector<string>& nodes) {         //TreeNode* root -- Current node being visited. vector<string>& nodes --- Pass the vector by reference so we can add values directly to it.
+        if(root == nullptr) {                                      // For ex- 1    , Here root->left of node 2 is null.
+                                                                             /
+                                                                            2 
+            nodes.push_back("null");
+            return;
+        }
+        nodes.push_back(to_string(root->val));
+        preorder(root->left, nodes);
+        preorder(root->right, nodes);
+    }
+    bool isSameTree(TreeNode* p, TreeNode* q) {
+        vector<string> tree1;
+        vector<string> tree2;
+        preorder(p, tree1);
+        preorder(q, tree2);
+        return tree1 == tree2;
+    }
+};
+
+
+
+Example -  
+    1                                                 1
+   /                                                   \
+  2                                                     2
+["1","2","null","null","null"] , ["1","null","2","null","null"] 
+
+*******So not equal, we include null values because without them our brute force approach won't work for cases like these.*******
+
+Complexity Analysis
+Time Complexity -> O(n)
+Space Complexity -> O(n)
+
+
+Optimal Approach -> (This is also recursive but instead of building vectors, it compares nodes directly)
+
+class Solution {
+public:
+    bool isSameTree(TreeNode* p, TreeNode* q) {
+        if(p == nullptr && q == nullptr) {              //If both nodes are null, they match, so return true.
+            return true;
+        }
+        if(p == nullptr || q == nullptr) {             // If exactly one node is null and the other isn't, the trees differ, so return false. 
+            return false;
+        }
+        if(p->val != q->val) {                         //If values dont match, return false
+            return false;
+        }
+        return isSameTree(p->left, q->left)               //Comparing left and right corresponding nodes of both trees recursively, returns true only if both statements are true, false otherwise.
+            && isSameTree(p->right, q->right);
+    }
+};
+
+Complexity Analysis
+Time Complexity -> O(n)
+Space Complexity -> O(h)
+where:
+h = height of tree
+
+
+Corner Cases
+1. Both Trees Empty
+p = []
+q = []
+
+Output:
+true
+
+2. One Tree Empty
+p = []
+q = [1]
+
+Output:
+false
+
+3. Same Structure, Same Values
+    1          1
+   / \        / \
+  2   3      2   3
+
+Output:
+true
+
+4. Same Values, Different Structure
+    1          1
+   /            \
+  2              2
+
+Output:
+false
+
+5. Same Structure, Different Values
+    1          1
+   /          /
+  2          3
+
+Output:
+false
