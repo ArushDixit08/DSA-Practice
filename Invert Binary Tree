@@ -1,0 +1,119 @@
+//Invert Binary Tree
+//Given the root of a binary tree, invert the tree, and return its root.
+//Example 1:
+//Input: root = [4,2,7,1,3,6,9]
+//Output: [4,7,2,9,6,3,1]
+//Example 2:
+//Input: root = [2,1,3]
+//Output: [2,3,1]
+//Example 3:
+//Input: root = []
+//Output: []
+
+Brute force approach -> 
+
+class Solution {
+public:
+    TreeNode* invertTree(TreeNode* root) {
+        if(root == nullptr) {
+            return nullptr;
+        }
+        TreeNode* newRoot = new TreeNode(root->val);        
+        newRoot->left = invertTree(root->right);
+        newRoot->right = invertTree(root->left);
+        return newRoot;
+    }
+};
+
+Note:
+We recursively invert the original right and left subtrees, then attach them in opposite positions while building a completely new tree.
+
+Complexity Analysis ->
+
+Time Complexity -> O(n)
+where:
+n = number of nodes in the tree
+Reason:
+Every node is visited once.
+
+Space Complexity -> O(n)
+where:
+n = number of nodes in the tree
+Reason:
+A completely new tree is created.
+
+Optimal Approach ->            //[In brute force approach rather than changing the nodes in the tree itself we are creating an entirely new tree which increases memory consumption]
+
+class Solution {
+public:
+    TreeNode* invertTree(TreeNode* root) {
+        if(root == nullptr) {
+            return nullptr;
+        }
+        swap(root->left, root->right);
+        invertTree(root->left);
+        invertTree(root->right);
+        return root;
+    }
+};
+
+Note:
+Here we directly swap the left and right child of every node in the original tree, then recursively invert the remaining subtrees.
+
+Complexity Analysis
+Time Complexity -> O(n)
+where:
+n = number of nodes in the tree
+Reason:
+Every node is visited exactly once.
+
+Space Complexity -> O(h)
+where:
+h = height of the tree
+Reason:
+Recursive call stack stores at most h function calls at one time.
+
+
+Corner Cases ->
+
+1. Empty Tree
+root = []
+Output:
+[]
+
+2. Single Node
+    1
+Output:
+    1
+(No children to swap.)
+
+3. Only Left Child
+    1
+   /
+  2
+Output:
+    1
+     \
+      2
+
+4. Only Right Child
+    1
+     \
+      2
+Output:
+    1
+   /
+  2
+
+5. Perfect Binary Tree
+        4
+      /   \
+     2     7
+    / \   / \
+   1  3  6  9
+Output:
+        4
+      /   \
+     7     2
+    / \   / \
+   9  6  3  1
