@@ -1,0 +1,141 @@
+//55. Min Stack
+//Implement the MinStack class:
+//MinStack() initializes the stack object.
+//void push(int value) pushes the element value onto the stack.
+//void pop() removes the element on the top of the stack.
+//int top() gets the top element of the stack.
+//int getMin() retrieves the minimum element in the stack.
+//You must implement a solution with O(1) time complexity for each function.
+//Example 1:
+//Input
+//["MinStack","push","push","push","getMin","pop","top","getMin"]
+//[[],[-2],[0],[-3],[],[],[],[]]
+//Output
+//[null,null,null,null,-3,null,0,-2]
+
+
+Optimal Approach ->
+
+class MinStack {
+public:
+    stack<int> st;
+    stack<int> minSt;
+    MinStack() {
+    }
+    void push(int val) {
+        st.push(val);
+        if(minSt.empty()) {
+            minSt.push(val);
+        }
+        else {
+            minSt.push(min(val, minSt.top()));
+        }
+    }
+    void pop() {
+        st.pop();
+        minSt.pop();
+    }
+    int top() {
+        return st.top();
+    }
+    int getMin() {
+        return minSt.top();
+    }
+};
+
+
+Complexity Analysis ->
+
+Time Complexity
+push()   -> O(1)
+pop()    -> O(1)
+top()    -> O(1)
+getMin() -> O(1)
+Reason:
+All operations only access the top element of a stack.
+
+Space Complexity
+O(n)
+where:
+n = number of elements in stack
+Reason:
+An additional stack is maintained to store the minimum value at every level.
+
+Dry Run of Optimal Approach
+Input:
+push(-2)
+push(0)
+push(-3)
+getMin()
+pop()
+top()
+getMin()
+Initial State
+st = []
+minSt = []
+push(-2)
+st = [-2]
+minSt = [-2]
+push(0)
+Current minimum = min(-2, 0) = -2
+st = [-2, 0]
+minSt = [-2, -2]
+push(-3)
+Current minimum = min(-3, -2) = -3
+st = [-2, 0, -3]
+minSt = [-2, -2, -3]
+getMin()
+minSt.top() = -3
+Output:
+-3
+pop()
+st = [-2, 0]
+minSt = [-2, -2]
+top()
+st.top() = 0
+Output:
+0
+getMin()
+minSt.top() = -2
+Output:
+-2
+
+
+
+
+Corner Cases
+
+1. Single Element
+push(5)
+getMin()
+Output:
+5
+
+2. Duplicate Minimum Values
+push(2)
+push(2)
+push(2)
+Output:
+2
+
+3. Negative Numbers
+push(-5)
+push(-10)
+Output:
+-10
+
+4. Increasing Sequence
+push(1)
+push(2)
+push(3)
+
+Output:
+1
+
+5. Decreasing Sequence
+push(5)
+push(4)
+push(3)
+push(2)
+Output:
+2
