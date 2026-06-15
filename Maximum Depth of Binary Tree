@@ -152,7 +152,7 @@ Returns:
 Final Answer:
 3
 
-Corner Cases
+Corner Cases ->
 
 1. Empty Tree
 root = []
