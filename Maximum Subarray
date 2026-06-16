@@ -1,0 +1,230 @@
+//Maximum Subarray
+//Given an integer array nums, find the subarray with the largest sum, and return its sum.
+//Example 1:
+//Input: nums = [-2,1,-3,4,-1,2,1,-5,4]
+//Output: 6
+//Explanation: The subarray [4,-1,2,1] has the largest sum 6.
+//Example 2:
+//Input: nums = [1]
+//Output: 1
+//Explanation: The subarray [1] has the largest sum 1.
+//Example 3:
+//Input: nums = [5,4,-1,7,8]
+//Output: 23
+//Explanation: The subarray [5,4,-1,7,8] has the largest sum 23.
+
+Brute Force Approach ->
+Compare every possible subarray and keep track of the maximum sum found.
+
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        int maxSum = nums[0];
+        for(int i = 0; i < nums.size(); i++) {
+            int currentSum = 0;
+            for(int j = i; j < nums.size(); j++) {
+                currentSum += nums[j];
+                maxSum = max(maxSum, currentSum);
+            }
+        }
+        return maxSum;
+    }
+};
+
+Intuition ->
+Generate every possible subarray.
+Calculate its sum.
+Keep updating the maximum sum encountered.
+
+Complexity Analysis ->
+
+Time Complexity -> O(n²)
+where:
+n = size of nums
+Reason:
+For every starting index, we expand the subarray to every possible ending index.
+
+Space Complexity -> O(1)
+Reason:
+Only a few variables are used.
+
+Optimal Approach -> (Kadane's Algorithm)
+
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        int currentSum = nums[0];
+        int maxSum = nums[0];
+
+        for(int i = 1; i < nums.size(); i++) {
+            currentSum = max(nums[i], currentSum + nums[i]);                       //currentSum would discard stuff immediately if it is smaller than current element because all of that would just be extra baggage.
+            maxSum = max(maxSum, currentSum);                                     //Out of all best-ending-here subarrays I've seen so far, which one is globally the best?
+        }
+        return maxSum;
+    }
+};
+
+Intuition ->
+At every index, we have two choices:
+Start a new subarray from the current element.
+Extend the previous subarray.
+Choose whichever gives a larger sum.
+Keep track of the best sum seen so far.
+
+Complexity Analysis ->
+
+Time Complexity -> O(n)
+where:
+n = size of nums
+Reason:
+We traverse the array only once.
+
+Space Complexity -> O(1)
+Reason:
+Only a few variables are used regardless of input size.
+
+Dry Run of Optimal Approach ->
+
+Input:
+nums = [-2,1,-3,4,-1,2,1,-5,4]
+Initial values:
+currentSum = -2
+maxSum = -2
+Iteration 1
+nums[i] = 1
+currentSum = max(1, -2 + 1)
+           = max(1, -1)
+           = 1
+maxSum = max(-2, 1)
+       = 1
+
+Current:
+currentSum = 1
+maxSum = 1
+
+Iteration 2
+nums[i] = -3
+currentSum = max(-3, 1 + (-3))
+           = max(-3, -2)
+           = -2
+maxSum = max(1, -2)
+       = 1
+
+Current:
+currentSum = -2
+maxSum = 1
+
+Iteration 3
+nums[i] = 4
+currentSum = max(4, -2 + 4)
+           = max(4, 2)
+           = 4
+maxSum = max(1, 4)
+       = 4
+
+Current:
+currentSum = 4
+maxSum = 4
+
+Iteration 4
+nums[i] = -1
+currentSum = max(-1, 4 + (-1))
+           = max(-1, 3)
+           = 3
+maxSum = max(4, 3)
+       = 4
+
+Current:
+currentSum = 3
+maxSum = 4
+
+Iteration 5
+nums[i] = 2
+currentSum = max(2, 3 + 2)
+           = max(2, 5)
+           = 5
+maxSum = max(4, 5)
+       = 5
+
+Current:
+currentSum = 5
+maxSum = 5
+
+Iteration 6
+nums[i] = 1
+currentSum = max(1, 5 + 1)
+           = max(1, 6)
+           = 6
+maxSum = max(5, 6)
+       = 6
+
+Current:
+currentSum = 6
+maxSum = 6
+
+Iteration 7
+nums[i] = -5
+currentSum = max(-5, 6 + (-5))
+           = max(-5, 1)
+           = 1
+maxSum = max(6, 1)
+       = 6
+
+Current:
+currentSum = 1
+maxSum = 6
+
+Iteration 8
+nums[i] = 4
+currentSum = max(4, 1 + 4)
+           = max(4, 5)
+           = 5
+maxSum = max(6, 5)
+       = 6
+
+Current:
+currentSum = 5
+maxSum = 6
+Final Answer:
+6
+
+Subarray:
+[4,-1,2,1]
+
+Corner Cases
+
+1. Single Element
+nums = [1]
+Output:
+1
+
+2. All Negative Numbers
+nums = [-5,-2,-8,-1]
+Output:
+-1
+(The largest element itself is the answer.)
+
+3. All Positive Numbers
+nums = [1,2,3,4]
+Output:
+10
+(The entire array is the answer.)
+
+4. Contains Zero
+nums = [-2,0,-1]
+Output:
+0
+
+5. Maximum Subarray in the Middle
+nums = [-2,1,-3,4,-1,2,1,-5,4]
+Output:
+6
+Subarray:
+[4,-1,2,1]
+
+Pattern Recognition
+
+This is one of the most famous Dynamic Programming / Kadane's Algorithm problems.
+Key observation:
+If the previous subarray sum becomes worse than starting fresh,  discard it and start a new subarray.
+That's exactly what: currentSum = max(nums[i], currentSum + nums[i]); does.
