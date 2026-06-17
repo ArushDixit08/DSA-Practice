@@ -1,0 +1,242 @@
+//206. Reverse Linked List
+//Given the head of a singly linked list, reverse the list, and return the reversed list.
+//Example 1:
+//Input: head = [1,2,3,4,5]
+//Output: [5,4,3,2,1]
+//Example 2:
+//Input: head = [1,2]
+//Output: [2,1]
+//Example 3:
+//Input: head = []
+//Output: []
+
+
+Brute Force Approach -> (Using Extra Array)
+
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        vector<int> values;
+        ListNode* curr = head;
+        while(curr) {                                // Same as while(curr != nullptr) {
+            values.push_back(curr->val);
+            curr = curr->next;
+        }
+        curr = head;
+        for(int i = values.size() - 1; i >= 0; i--) {
+            curr->val = values[i];
+            curr = curr->next;
+        }
+        return head;
+    }
+};
+
+Intuition ->
+Store all node values in an array.
+Traverse the linked list again and overwrite each node with values from the array in reverse order.
+The linked list structure remains unchanged, only the values are reversed.
+
+Complexity Analysis ->
+
+Time Complexity -> O(n)
+where:
+n = number of nodes
+Reason:
+We traverse the linked list twice.
+
+Space Complexity -> O(n)
+Reason:
+An additional array stores all node values.
+
+Optimal Approach -> (Iterative Pointer Reversal)
+
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+       ListNode* prev = nullptr;
+        ListNode* curr = head;
+        while(curr) {
+            ListNode* nextNode = curr->next;
+            curr->next = prev;
+            prev = curr;
+            curr = nextNode;
+        }
+        return prev;
+    }
+};
+
+Intuition ->
+
+For every node:
+Store next node
+Reverse current node's pointer
+Move prev forward
+Move curr forward
+Gradually the entire linked list gets reversed.
+At the end:
+prev
+points to the new head.
+
+Complexity Analysis ->
+
+Time Complexity -> O(n)
+where:
+n = number of nodes
+Reason:
+Every node is visited exactly once.
+
+Space Complexity -> O(1)
+Reason:
+Only a few pointer variables are used.
+
+Dry Run of Optimal Approach
+
+Original List
+1 -> 2 -> 3 -> 4 -> 5 -> NULL
+Our goal:
+5 -> 4 -> 3 -> 2 -> 1 -> NULL
+
+Problem
+Suppose you're at node 1.
+1 -> 2 -> 3 -> 4 -> 5 -> NULL
+^
+curr
+To reverse it, you want:
+1 -> NULL
+So you do:
+curr->next = nullptr;
+BUT...
+1 -> NULL
+2 -> 3 -> 4 -> 5
+You just lost access to the rest of the list.
+That's why we need:
+ListNode* nextNode = curr->next;
+FIRST.
+The Three Pointers
+We keep:
+prev
+curr
+nextNode
+Initially:
+prev = NULL
+curr
+ |
+ v
+1 -> 2 -> 3 -> 4 -> 5 -> NULL
+
+Iteration 1
+Save next node
+nextNode = curr->next;
+nextNode
+   |
+   v
+1 -> 2 -> 3 -> 4 -> 5
+curr
+Reverse pointer
+curr->next = prev;
+1 -> NULL
+2 -> 3 -> 4 -> 5
+Now node 1 is reversed.
+Move pointers forward
+prev = curr;
+curr = nextNode;
+prev
+ |
+ v
+1 -> NULL
+
+curr
+ |
+ v
+2 -> 3 -> 4 -> 5
+
+Iteration 2
+Save next:
+nextNode = 3
+Reverse:
+curr->next = prev;
+2 -> 1 -> NULL
+Move forward:
+prev
+ |
+ v
+2 -> 1 -> NULL
+
+curr
+ |
+ v
+3 -> 4 -> 5
+
+Iteration 3
+Reverse:
+3 -> 2 -> 1 -> NULL
+Move:
+prev
+ |
+ v
+3 -> 2 -> 1 -> NULL
+curr
+ |
+ v
+4 -> 5
+
+Iteration 4
+Reverse:
+4 -> 3 -> 2 -> 1 -> NULL
+
+Iteration 5
+Reverse:
+5 -> 4 -> 3 -> 2 -> 1 -> NULL
+Move:
+prev
+ |
+ v
+5 -> 4 -> 3 -> 2 -> 1 -> NULL
+curr = NULL
+Loop ends.
+
+Why Return prev?
+At the end:
+prev
+ |
+ v
+5 -> 4 -> 3 -> 2 -> 1 -> NULL
+curr = NULL
+The original head (1) is now the tail.
+The new head is:
+5
+which is stored in:
+prev
+So:
+return prev;
+
+Corner Cases
+
+1. Empty List
+head = []
+Output:
+[]
+
+2. Single Node
+1
+Output:
+1
+
+3. Two Nodes
+1 -> 2
+Output:
+2 -> 1
+
+4. Already Reversed Looking List
+5 -> 4 -> 3 -> 2 -> 1
+Output:
+1 -> 2 -> 3 -> 4 -> 5
+
+5. All Same Values
+1 -> 1 -> 1
+Output:
+1 -> 1 -> 1
+(Node connections are reversed even though values look identical.)
+
+Pattern Recognition - Linked List + Pointer Manipulation
+ 
