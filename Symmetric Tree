@@ -1,0 +1,287 @@
+//Symmetric Tree
+//Given the root of a binary tree, check whether it is a mirror of itself (i.e., symmetric around its center).
+//Example 1:
+//Input: root = [1,2,2,3,4,4,3]
+//Output: true
+//Example 2:
+//Input: root = [1,2,2,null,3,null,3]
+//Output: false
+
+
+Brute Force Approach -> (Store Mirror Traversals)
+Compare the left subtree and right subtree by storing their mirror traversals in separate arrays and checking whether they match.
+
+class Solution {
+public:
+    bool isSymmetric(TreeNode* root) {
+        if(root == nullptr) {
+            return true;
+        }
+        queue<TreeNode*> q;
+        q.push(root);
+        while(!q.empty()) {
+            int size = q.size();
+            vector<int> level;
+            for(int i = 0; i < size; i++) {
+                TreeNode* node = q.front();
+                q.pop();
+                if(node == nullptr) {
+                    level.push_back(INT_MIN);
+                    continue;
+                }
+                level.push_back(node->val);
+                q.push(node->left);
+                q.push(node->right);
+            }
+            int left = 0;
+            int right = level.size() - 1;
+            while(left < right) {
+                if(level[left] != level[right]) {
+                    return false;
+                }
+                left++;
+                right--;
+            }
+        }
+        return true;
+    }
+};
+
+Intuition ->
+Generate a traversal for the left subtree.
+Generate a mirrored traversal for the right subtree.
+If both traversals are identical, the tree is symmetric.
+Otherwise, it is not.
+
+Complexity Analysis ->
+Time Complexity -> O(n)
+where:
+n = number of nodes in the tree
+Reason:
+Every node is visited once.
+Space Complexity -> O(n)
+Reason:
+Extra arrays are used to store traversals.
+
+Optimal Approach -> (Recursive Mirror Check)
+class Solution {
+public:
+    bool isMirror(TreeNode* left, TreeNode* right) {
+        if(left == nullptr && right == nullptr) {
+            return true;
+        }
+        if(left == nullptr || right == nullptr) {
+            return false;
+        }
+        if(left->val != right->val) {
+            return false;
+        }
+        return isMirror(left->left, right->right) &&
+               isMirror(left->right, right->left);
+    }
+    bool isSymmetric(TreeNode* root) {
+        return isMirror(root->left, root->right);
+    }
+};
+
+
+Intuition ->
+For a tree to be symmetric:
+left->val == right->val
+and
+left->left  ↔  right->right
+and
+left->right ↔ right->left
+In other words:
+Left subtree must be a mirror image of the right subtree.
+
+At every step:
+Check if both nodes are null.
+Check if only one node is null.
+Check if values match.
+Recursively compare mirror children.
+Complexity Analysis ->
+
+Time Complexity -> O(n)
+where:
+n = number of nodes in the tree
+Reason:
+Every node is visited exactly once.
+
+Space Complexity -> O(h)
+where:
+h = height of the tree
+Reason:
+Recursive call stack stores at most h calls at one time.
+
+Worst Case:
+O(n)
+for a skewed tree.
+
+Best/Balanced Tree:
+O(log n)
+
+Dry Run of Optimal Approach
+
+Input
+        1
+      /   \
+     2     2
+    / \   / \
+   3   4 4   3
+
+Call:
+isMirror(root->left, root->right)
+↓
+isMirror(2,2)
+
+Step 1
+Compare:
+2 ↔ 2
+Values match.
+Now check:
+isMirror(3,3)
+AND
+isMirror(4,4)
+Step 2
+
+Compare:
+
+3 ↔ 3
+
+Values match.
+
+Now check:
+
+isMirror(NULL,NULL)
+AND
+isMirror(NULL,NULL)
+
+Both return:
+
+true
+
+So:
+
+isMirror(3,3) = true
+Step 3
+
+Compare:
+
+4 ↔ 4
+
+Values match.
+
+Now check:
+
+isMirror(NULL,NULL)
+AND
+isMirror(NULL,NULL)
+
+Both return:
+
+true
+
+So:
+
+isMirror(4,4) = true
+Step 4
+
+Return:
+
+true && true
+
+↓
+
+true
+
+Final Answer:
+
+true
+Dry Run of Non-Symmetric Tree
+
+Input
+        1
+      /   \
+     2     2
+      \     \
+       3     3
+
+Call:
+isMirror(2,2)
+Good.
+Now compare:
+left->left = NULL
+right->right = 3
+Call:
+isMirror(NULL,3)
+
+One node is null and the other is not.
+Return:
+false
+Final Answer:
+false
+
+Corner Cases
+
+1. Empty Tree
+root = []
+Output:
+true
+Reason:
+An empty tree is symmetric.
+
+2. Single Node
+    1
+Output:
+true
+
+3. Perfect Symmetric Tree
+        1
+      /   \
+     2     2
+    / \   / \
+   3   4 4   3
+
+Output:
+true
+
+4. Same Values but Wrong Structure
+        1
+      /   \
+     2     2
+      \     \
+       3     3
+
+Output:
+false
+
+5. Different Values
+        1
+      /   \
+     2     2
+    /       \
+   3         4
+
+Output:
+false
+
+Pattern Recognition
+📌 Tree + Recursion + Mirror Comparison
+
+Key Observation:
+A symmetric tree is simply a tree whose left subtree
+is the mirror image of its right subtree.
+Instead of checking levels or traversals explicitly:
+Compare two nodes at a time.
+
+Mirror Rule:
+left->left  ↔ right->right
+left->right ↔ right->left
+This naturally leads to a recursive solution.
+
+Interview Insight
+Many candidates immediately think of:
+Level Order Traversal (BFS)
+But the cleanest solution is:
+Recursive Mirror Check because symmetry is inherently a recursive property.
