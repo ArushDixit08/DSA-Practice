@@ -1,0 +1,279 @@
+//Balanced Binary Tree
+//Given a binary tree, determine if it is height-balanced.
+//A binary tree is height-balanced if the heights of the two subtrees of every node never differ by more than 1.
+//Example 1:
+//Input: root = [3,9,20,null,null,15,7]
+//Output: true
+//Example 2:
+//Input: root = [1,2,2,3,3,null,null,4,4]
+//Output: false
+//Example 3:
+//Input: root = []
+//Output: true
+
+Brute Force Approach ->
+
+For every node:
+Calculate the height of the left subtree.
+Calculate the height of the right subtree.
+Check whether their difference is greater than 1.
+Recursively verify that both left and right subtrees are balanced.
+
+class Solution {
+public:
+    int height(TreeNode* root) {
+        if(root == nullptr) {
+            return 0;
+        }
+        return 1 + max(height(root->left),
+                       height(root->right));
+    }
+    bool isBalanced(TreeNode* root) {
+        if(root == nullptr) {
+            return true;
+        }
+        int leftHeight = height(root->left);
+        int rightHeight = height(root->right);
+        if(abs(leftHeight - rightHeight) > 1) {
+            return false;
+        }
+        return isBalanced(root->left) &&
+               isBalanced(root->right);
+    }
+};
+
+Intuition ->
+For every node:
+Check:
+|height(left) - height(right)| <= 1
+If the current node is balanced and both subtrees are balanced, then the whole tree is balanced.
+
+Complexity Analysis ->
+Time Complexity -> O(n²)
+where:
+n = number of nodes
+Reason:
+For every node, we recompute heights of subtrees.
+
+Space Complexity -> O(h)
+where:
+h = height of the tree
+Reason:
+Recursive call stack.
+
+Optimization Journey
+
+The brute force solution repeatedly computes heights.
+Example:
+
+        1
+       / \
+      2   2
+     /
+    3
+   /
+  4
+
+When checking node 1: 
+height(2) is computed.
+When checking node 2:
+height(3) is computed again.
+Lots of repeated work.
+
+Key Observation
+While checking balance, we already need:
+height(left)
+height(right)
+So:
+Instead of:
+Compute height
+Then check balance
+We can:
+Compute height
+AND
+check balance
+in the same DFS traversal.
+
+Optimal Approach -> (DFS Height + Early Failure)
+
+class Solution {
+public:
+    int checkHeight(TreeNode* root) {
+        if(root == nullptr) {
+            return 0;
+        }
+        int leftHeight = checkHeight(root->left);
+        if(leftHeight == -1) {
+            return -1;
+        }
+        int rightHeight = checkHeight(root->right);
+        if(rightHeight == -1) {
+            return -1;
+        }
+        if(abs(leftHeight - rightHeight) > 1) {
+            return -1;
+        }
+        return 1 + max(leftHeight, rightHeight);
+    }
+    bool isBalanced(TreeNode* root) {
+        return checkHeight(root) != -1;
+    }
+};
+
+Complexity Analysis ->
+Time Complexity -> O(n)
+where:
+n = number of nodes
+Reason:
+Every node is visited exactly once.
+
+Space Complexity -> O(h)
+where:
+h = height of the tree
+Reason:
+Recursive call stack.
+
+Balanced Tree:
+O(log n)
+Worst Case Skewed Tree:
+O(n)
+
+Dry Run of Optimal Approach
+
+Input
+        3
+       / \
+      9   20
+         /  \
+        15   7
+Step 1
+
+Node 9:
+leftHeight = 0
+rightHeight = 0
+difference = 0
+Return:
+1
+
+Step 2
+Node 15:
+leftHeight = 0
+rightHeight = 0
+Return:
+1
+
+Step 3
+Node 7:
+leftHeight = 0
+rightHeight = 0
+Return:
+1
+
+Step 4
+Node 20:
+leftHeight = 1
+rightHeight = 1
+difference = 0
+Return:
+2
+
+Step 5
+Node 3:
+leftHeight = 1
+rightHeight = 2
+difference = 1
+Balanced.
+Return:
+3
+Final:
+checkHeight(root) = 3
+Therefore:
+isBalanced = true
+
+Dry Run of Unbalanced Tree
+
+Input
+        1
+       /
+      2
+     /
+    3
+   /
+  4
+
+Node 4:
+height = 1
+Node 3:
+leftHeight = 1
+rightHeight = 0
+difference = 1
+Return:
+2
+Node 2:
+leftHeight = 2
+rightHeight = 0
+difference = 2
+Unbalanced.
+Return:
+-1
+Node 1:
+Receives:
+leftHeight = -1
+Immediately returns:
+-1
+No further work needed.
+
+Corner Cases
+
+1. Empty Tree
+root = []
+Output:
+true
+
+2. Single Node
+    1
+Output:
+true
+
+3. Perfect Binary Tree
+        1
+      /   \
+     2     3
+    / \   / \
+   4  5  6  7
+Output:
+true
+
+4. Left Skewed Tree
+    1
+   /
+  2
+ /
+3
+/
+4
+
+Output:
+false
+
+5. Right Skewed Tree
+1
+ \
+  2
+   \
+    3
+     \
+      4
+
+Output:
+false
+
+Pattern Recognition
+Tree + DFS + Bottom-Up Computation
+
+Interview Insight
+This is a classic: Top-Down → Bottom-Up Optimization
+Brute Force: Check balance
+Then compute heights repeatedly.
+Optimal: Compute heights while checking balance.
+The -1 trick is a very common interview pattern for propagating failure information upward during DFS. 
