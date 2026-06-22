@@ -1,0 +1,209 @@
+//3Sum
+//Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i != j, i != k, and j != k, and nums[i] + nums[j] + nums[k] == 0.
+//Notice that the solution set must not contain duplicate triplets.
+//Example 1:
+//Input: nums = [-1,0,1,2,-1,-4]
+//Output: [[-1,-1,2],[-1,0,1]]
+//Explanation: 
+//nums[0] + nums[1] + nums[2] = (-1) + 0 + 1 = 0.
+//nums[1] + nums[2] + nums[4] = 0 + 1 + (-1) = 0.
+//nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0.
+//The distinct triplets are [-1,0,1] and [-1,-1,2].
+//Notice that the order of the output and the order of the triplets does not matter.
+
+Optimal Approach -> (Sorting + Two Pointers)
+
+class Solution {
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        vector<vector<int>> result;
+        sort(nums.begin(), nums.end());
+        for(int i = 0; i < nums.size(); i++) {
+            if(i > 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            int left = i + 1;
+            int right = nums.size() - 1;
+            while(left < right) {
+                int sum = nums[i] + nums[left] + nums[right];
+                if(sum < 0) {
+                    left++;
+                }
+                else if(sum > 0) {
+                    right--;
+                }
+                else {
+                    result.push_back(
+                        {nums[i], nums[left], nums[right]}
+                    );
+                    left++;
+                    right--;
+                    while(left < right &&
+                          nums[left] == nums[left - 1]) {
+                        left++;
+                    }
+                    while(left < right &&
+                          nums[right] == nums[right + 1]) {
+                        right--;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+};
+
+Intuition ->
+First sort the array.
+For every element: nums[i] fix it as the first element of the triplet.
+Now we need: nums[left] + nums[right] = -nums[i]
+This becomes a Two Sum problem on a sorted array.
+Use:
+left = i + 1
+right = n - 1
+and move pointers according to the current sum.
+Skip duplicates to avoid repeated triplets.
+
+Complexity Analysis ->
+Time Complexity -> O(n²)
+where:
+n = size of nums
+Reason:
+Sorting: O(n log n)
+Outer loop: O(n)
+Two pointers for each i: O(n)
+Total: O(n²)
+
+Space Complexity -> O(1)
+Ignoring output array.
+Reason:
+Only pointer variables are used.
+
+Dry Run of Optimal Approach
+Input
+nums = [-1,0,1,2,-1,-4]
+
+After sorting:
+
+[-4,-1,-1,0,1,2]
+i = 0
+nums[i] = -4
+
+Need:
+
+4
+
+Pointers:
+
+[-4,-1,-1,0,1,2]
+  i  L          R
+
+Possible sums:
+
+-4 + (-1) + 2 = -3
+-4 + (-1) + 2 = -3
+-4 + 0 + 2 = -2
+-4 + 1 + 2 = -1
+
+No triplet found.
+
+i = 1
+nums[i] = -1
+
+Pointers:
+
+[-4,-1,-1,0,1,2]
+     i  L      R
+
+Sum:
+
+-1 + (-1) + 2 = 0
+
+Found:
+
+[-1,-1,2]
+
+Store it.
+
+Move pointers.
+
+Now:
+
+[-4,-1,-1,0,1,2]
+     i     L  R
+
+Sum:
+
+-1 + 0 + 1 = 0
+
+Found:
+
+[-1,0,1]
+
+Store it.
+
+Move pointers.
+
+Loop ends.
+
+i = 2
+nums[2] = -1
+
+Duplicate of previous i.
+
+Skip.
+
+Final Result
+
+[
+ [-1,-1,2],
+ [-1,0,1]
+]
+Corner Cases
+1. Empty Array
+nums = []
+
+Output:
+
+[]
+2. Less Than Three Elements
+nums = [1,2]
+
+Output:
+
+[]
+3. All Zeros
+nums = [0,0,0]
+
+Output:
+
+[[0,0,0]]
+4. No Valid Triplet
+nums = [0,1,1]
+
+Output:
+
+[]
+5. Duplicate Values
+nums = [-1,-1,-1,2,2]
+
+Output:
+
+[[-1,-1,2]]
+
+Only one copy is stored because duplicates are skipped.
+
+Pattern Recognition
+
+Sorting + Two Pointers + Duplicate Handling
+
+Key Observation:
+Fix one element.
+The remaining problem becomes:
+Two Sum on a sorted array.
+
+This transforms:
+O(n³)
+into:
+O(n²)
+and is the standard interview solution for 3Sum. 
