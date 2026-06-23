@@ -1,0 +1,163 @@
+//Diameter of Binary Tree
+//Given the root of a binary tree, return the length of the diameter of the tree.
+//The diameter of a binary tree is the length of the longest path between any two nodes in a tree. This path may or may not pass through the root.
+//The length of a path between two nodes is represented by the number of edges between them.
+//Example 1:
+//Input: root = [1,2,3,4,5]
+//Output: 3
+//Explanation: 3 is the length of the path [4,2,1,3] or [5,2,1,3].
+//Example 2:
+//Input: root = [1,2]
+//Output: 1
+
+Intuition
+Every node asks:
+"What is the tallest path in my left subtree?"
+"What is the tallest path in my right subtree?"
+Then:
+diameter = leftHeight + rightHeight
+because:
+deepest node in left subtree → current node → deepest node in right subtree
+forms the longest path passing through that node.
+
+Optimal Code (C++)
+class Solution {
+public:
+    int diameter = 0;
+    int height(TreeNode* root)
+    {
+        if(root == nullptr)
+            return 0;
+        int left = height(root->left);
+        int right = height(root->right);
+        diameter = max(diameter, left + right);
+        return 1 + max(left, right);
+    }
+    int diameterOfBinaryTree(TreeNode* root)
+    {
+        height(root);
+        return diameter;
+    }
+};
+
+Dry Run of Optimal Approach
+Input:
+        1
+       / \
+      2   3
+     / \
+    4   5
+Node 4
+left = 0
+right = 0
+
+diameter = max(0,0)
+
+return 1
+Node 5
+left = 0
+right = 0
+
+diameter = 0
+
+return 1
+Node 2
+left = 1
+right = 1
+
+diameter = max(0,2)
+         = 2
+
+return 2
+Node 3
+left = 0
+right = 0
+
+diameter = 2
+
+return 1
+Node 1
+left = 2
+right = 1
+
+diameter = max(2,3)
+         = 3
+
+return 3
+
+Final Answer:
+
+3
+Why We Return Height
+
+After processing a node:
+
+return 1 + max(left,right);
+
+because height is: current node + taller subtree
+Example:
+
+      2
+     / \
+    4   5
+
+Both children have height 1.
+height(2) = 1 + max(1,1) = 2
+
+
+Time Complexity
+Each node visited once.
+O(N)
+where N = number of nodes.
+
+Space Complexity
+Recursion stack:
+O(H)
+where H = tree height.
+
+Balanced tree:
+O(log N)
+Skewed tree:
+O(N)
+
+Corner Cases
+Single Node
+1
+Diameter:
+0
+No edges.
+
+Two Nodes
+1
+|
+2
+Diameter:
+1
+
+Completely Skewed
+1
+ \
+  2
+   \
+    3
+     \
+      4
+
+Diameter:
+3
+
+Diameter Not Passing Through Root
+        1
+       /
+      2
+     / \
+    3   4
+   / \
+  5   6
+Longest path:
+5 → 3 → 2 → 4
+
+Interview Explanation
+"Diameter through any node equals the height of its left subtree plus the height of its right subtree. While performing a postorder DFS to calculate heights, 
+I update a global answer with leftHeight + rightHeight at every node. Since each node is visited once and height information is reused immediately, the overall 
+complexity becomes O(N) with O(H) recursion stack space."
