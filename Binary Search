@@ -1,0 +1,121 @@
+//704. Binary Search
+//Given an array of integers nums which is sorted in ascending order, and an integer target,
+//return its index if found, otherwise return -1.
+//You must write an algorithm with O(log n) runtime complexity.
+//Example 1:
+//Input: nums = [-1,0,3,5,9,12], target = 9
+//Output: 4
+//Example 2:
+//Input: nums = [-1,0,3,5,9,12], target = 2
+//Output: -1
+
+
+Optimal Approach -> (Binary Search)
+class Solution {
+public:
+    int search(vector<int>& nums, int target) {
+        int left = 0;
+        int right = nums.size() - 1;
+        while(left <= right) {
+            int mid = left + (right - left) / 2;
+            if(nums[mid] == target) {
+                return mid;
+            }
+            else if(nums[mid] < target) {
+                left = mid + 1;
+            }
+            else {
+                right = mid - 1;
+            }
+        }
+        return -1;
+    }
+};
+
+Intuition ->
+The array is already sorted.
+Instead of searching every element:
+Check the middle element.
+If: nums[mid] < target the target can only be in the right half.
+If: nums[mid] > target the target can only be in the left half.
+Discard half of the search space after every comparison.
+
+Complexity Analysis ->
+Time Complexity -> O(log n)
+where:
+n = size of nums
+Reason:
+Each iteration eliminates half of the remaining search space.
+
+Space Complexity -> O(1)
+Reason:
+Only a few variables are used.
+
+Dry Run of Optimal Approach
+
+Input
+nums = [-1,0,3,5,9,12]
+target = 9
+Initial:
+left = 0
+right = 5
+Iteration 1
+mid = 0 + (5 - 0)/2
+    = 2
+nums[mid] = 3
+Since:
+3 < 9
+Search right half:
+left = mid + 1
+     = 3
+Current:
+left = 3
+right = 5
+Iteration 2
+mid = 3 + (5 - 3)/2
+    = 4
+nums[mid] = 9
+Target found.
+Return:
+4
+
+Corner Cases
+
+1. Target Exists
+nums = [-1,0,3,5,9,12]
+target = 9
+Output:
+4
+
+2. Target Does Not Exist
+nums = [-1,0,3,5,9,12]
+target = 2
+Output:
+-1
+
+3. Single Element Found
+nums = [5]
+target = 5
+Output:
+0
+
+4. Single Element Not Found
+nums = [5]
+target = 2
+Output:
+-1
+
+5. Target at Beginning
+nums = [1,2,3,4,5]
+target = 1
+Output:
+0
+
+6. Target at End
+nums = [1,2,3,4,5]
+target = 5
+Output:
+4
+
+Pattern Recognition
+Sorted Array + Divide and Conquer
