@@ -1,0 +1,168 @@
+//141. Linked List Cycle
+//Given head, the head of a linked list, determine if the linked list has a cycle in it.
+//Return true if there is a cycle in the linked list. Otherwise, return false.
+//Example 1:
+//Input: head = [3,2,0,-4], pos = 1
+//Output: true
+//Example 2:
+//Input: head = [1,2], pos = 0
+//Output: true
+//Example 3:
+//Input: head = [1], pos = -1
+//Output: false
+
+
+Brute Force Approach -> (Hash Set)
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
+        unordered_set<ListNode*> visited;
+        ListNode* curr = head;
+        while(curr) {
+            if(visited.count(curr)) {
+                return true;
+            }
+            visited.insert(curr);
+            curr = curr->next;
+        }
+        return false;
+    }
+};
+
+Intuition ->
+// Store visited nodes, not values.
+// If the same node is reached again, a cycle exists.
+Traverse the linked list.
+For every node:
+Check whether we've already visited it.
+If yes:
+Cycle exists.
+Otherwise:
+Store it in the hash set and continue.
+
+Complexity Analysis ->
+Time Complexity -> O(n)
+where:
+n = number of nodes
+Reason:
+Each node is visited at most once.
+
+Space Complexity -> O(n)
+Reason:
+Hash set stores visited nodes.
+
+Optimal Approach -> (Floyd's Cycle Detection Algorithm)
+
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
+        ListNode* slow = head;
+        ListNode* fast = head;
+        while(fast && fast->next) {
+            slow = slow->next;
+            fast = fast->next->next;
+            if(slow == fast) {
+                return true;
+            }
+        }
+        return false;
+    }
+};
+
+Intuition ->
+Use two pointers:
+slow → moves 1 step
+fast → moves 2 steps
+If a cycle exists:
+Fast eventually catches slow.
+If no cycle exists:
+Fast reaches NULL.
+
+Complexity Analysis ->
+Time Complexity -> O(n)
+where:
+n = number of nodes
+Reason:
+Both pointers traverse the list at most once.
+
+Space Complexity -> O(1)
+Reason:
+Only two pointers are used.
+
+Dry Run of Optimal Approach
+Input
+3 -> 2 -> 0 -> -4
+     ^         |
+     |_________|
+
+Initial:
+
+slow = 3
+fast = 3
+Iteration 1
+slow = 2
+fast = 0
+
+Not equal.
+
+Iteration 2
+slow = 0
+fast = 2
+
+Not equal.
+
+Iteration 3
+slow = -4
+fast = -4
+
+Pointers meet.
+
+Return:
+
+true
+Corner Cases
+1. Empty List
+head = []
+
+Output:
+
+false
+2. Single Node Without Cycle
+1 -> NULL
+
+Output:
+
+false
+3. Single Node With Cycle
+1
+↑↓
+
+Output:
+
+true
+4. Two Nodes With Cycle
+1 -> 2
+↑    |
+|____|
+
+Output:
+
+true
+5. Long List Without Cycle
+1 -> 2 -> 3 -> 4 -> NULL
+
+Output:
+false
+
+Pattern Recognition
+
+Linked List + Fast & Slow Pointers (Floyd's Cycle Detection)
+
+
+Interview Insight
+
+This is the classic: Tortoise and Hare Algorithm
+The same pattern appears in:
+142. Linked List Cycle II
+202. Happy Number
+287. Find the Duplicate Number
