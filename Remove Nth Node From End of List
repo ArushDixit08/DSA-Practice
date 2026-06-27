@@ -1,0 +1,280 @@
+//19. Remove Nth Node From End of List
+//Given the head of a linked list, remove the nth node from the end of the list and return its head.
+//Example 1:
+//Input: head = [1,2,3,4,5], n = 2
+//Output: [1,2,3,5]
+//Example 2:
+//Input: head = [1], n = 1
+//Output: []
+//Example 3:
+//Input: head = [1,2], n = 1
+//Output: [1]
+
+
+Brute Force Approach -> (Find Length First)
+
+class Solution {
+public:
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        int length = 0;
+        ListNode* curr = head;
+        while(curr) {
+            length++;
+            curr = curr->next;
+        }
+        // Remove the head
+        if(length == n) {
+            return head->next;
+        }
+        int position = length - n;
+        curr = head;
+        for(int i = 1; i < position; i++) {
+            curr = curr->next;
+        }
+        curr->next = curr->next->next;
+        return head;
+    }
+};
+
+Intuition ->
+
+First, find the length of the linked list.
+The node to remove is:
+(position = length - n + 1)
+from the beginning.
+Traverse again until reaching the node just before it,
+then bypass the target node.
+
+Complexity Analysis ->
+Time Complexity -> O(n)
+where:
+n = number of nodes
+Reason:
+One traversal to calculate the length.
+One traversal to remove the node.
+
+Space Complexity -> O(1)
+Reason:
+Only a few pointer variables are used.
+
+------------------------------------------------------------
+
+Optimal Approach -> (Two Pointers + Dummy Node)
+
+class Solution {
+public:
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        ListNode* dummy = new ListNode(0);
+        dummy->next = head;
+        ListNode* slow = dummy;
+        ListNode* fast = dummy;
+        // Create a gap of n + 1 nodes
+        for(int i = 0; i <= n; i++) {
+            fast = fast->next;
+        }
+        while(fast) {
+            slow = slow->next;
+            fast = fast->next;
+        }
+        slow->next = slow->next->next;
+        return dummy->next;
+    }
+};
+
+Intuition ->
+
+Maintain a gap of (n + 1) nodes between the fast and slow pointers.
+
+Move the fast pointer first.
+
+Then move both pointers together.
+
+When fast reaches NULL,
+
+slow will be exactly one node before the node that must be removed.
+
+Simply bypass that node.
+
+A dummy node is used so that removing the head becomes a normal case instead of a special case.
+
+Complexity Analysis ->
+
+Time Complexity -> O(n)
+
+where:
+n = number of nodes
+
+Reason:
+The linked list is traversed only once.
+
+Space Complexity -> O(1)
+
+Reason:
+Only a few pointer variables are used.
+
+------------------------------------------------------------
+
+Dry Run of Optimal Approach
+
+Input
+
+head =
+
+1 -> 2 -> 3 -> 4 -> 5
+
+n = 2
+
+Create dummy
+
+0 -> 1 -> 2 -> 3 -> 4 -> 5
+
+dummy
+ ^
+slow
+ ^
+fast
+
+------------------------------------------------------------
+
+Move fast (n + 1 = 3) steps
+
+fast
+
+          ↓
+0 -> 1 -> 2 -> 3 -> 4 -> 5
+
+slow still at dummy.
+
+------------------------------------------------------------
+
+Move both together
+
+Step 1
+
+slow -> 1
+
+fast -> 4
+
+------------------------------------------------------------
+
+Step 2
+
+slow -> 2
+
+fast -> 5
+
+------------------------------------------------------------
+
+Step 3
+
+slow -> 3
+
+fast -> NULL
+
+Stop.
+
+Now slow is exactly one node before the node to remove.
+
+Current list
+
+1 -> 2 -> 3 -> 4 -> 5
+
+          ^
+         slow
+
+Remove
+
+slow->next = slow->next->next;
+
+Result
+
+1 -> 2 -> 3 -> 5
+
+Return
+
+dummy->next
+
+------------------------------------------------------------
+
+Corner Cases
+
+1. Remove Head
+
+head = [1]
+
+n = 1
+
+Output:
+
+[]
+
+------------------------------------------------------------
+
+2. Remove Last Node
+
+head = [1,2]
+
+n = 1
+
+Output:
+
+[1]
+
+------------------------------------------------------------
+
+3. Remove First Node
+
+head = [1,2,3]
+
+n = 3
+
+Output:
+
+[2,3]
+
+------------------------------------------------------------
+
+4. Remove Middle Node
+
+head = [1,2,3,4,5]
+
+n = 2
+
+Output:
+
+[1,2,3,5]
+
+------------------------------------------------------------
+
+5. Two Nodes
+
+head = [1,2]
+
+n = 2
+
+Output:
+
+[2]
+
+------------------------------------------------------------
+
+Pattern Recognition
+
+📌 Linked List + Fast & Slow Pointers
+
+Key Observation:
+
+Instead of calculating the length first,
+maintain a fixed gap between two pointers.
+
+When the fast pointer reaches the end,
+
+the slow pointer automatically reaches the node immediately before the one that must be removed.
+
+------------------------------------------------------------
+
+Interview Insight
+
+The dummy node is the key trick.
+Without it, removing the head requires a separate special case.
+With a dummy node, every deletion becomes identical, making the implementation simpler and less error-prone.
