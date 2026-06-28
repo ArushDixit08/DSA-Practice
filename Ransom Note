@@ -1,0 +1,290 @@
+//383. Ransom Note
+//Given two strings ransomNote and magazine, return true if ransomNote can be constructed using the letters from magazine.
+//Each letter in magazine can only be used once.
+//Example 1:
+//Input: ransomNote = "a", magazine = "b"
+//Output: false
+//Example 2:
+//Input: ransomNote = "aa", magazine = "ab"
+//Output: false
+//Example 3:
+//Input: ransomNote = "aa", magazine = "aab"
+//Output: true
+
+
+Brute Force Approach ->
+
+Compare every character of ransomNote with magazine.
+Whenever a matching unused character is found, mark it as used.
+If any character cannot be matched, return false.
+
+class Solution {
+public:
+    bool canConstruct(string ransomNote, string magazine) {
+        vector<bool> used(magazine.size(), false);
+        for(int i = 0; i < ransomNote.size(); i++) {
+            bool found = false;
+            for(int j = 0; j < magazine.size(); j++) {
+                if(!used[j] && ransomNote[i] == magazine[j]) {
+                    used[j] = true;
+                    found = true;
+                    break;
+                }
+            }
+            if(!found) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
+Intuition ->
+
+For every character in ransomNote:
+
+Search the magazine.
+
+If an unused matching character exists,
+mark it as used.
+
+If no match is found,
+construction is impossible.
+
+Complexity Analysis ->
+
+Time Complexity -> O(n × m)
+
+where:
+
+n = length of ransomNote
+
+m = length of magazine
+
+Reason:
+
+For every character in ransomNote,
+we may scan the entire magazine.
+
+Space Complexity -> O(m)
+
+Reason:
+
+A boolean array stores whether each magazine character has already been used.
+
+------------------------------------------------------------
+
+Optimal Approach -> (Frequency Counting)
+
+class Solution {
+public:
+    bool canConstruct(string ransomNote, string magazine) {
+
+        vector<int> freq(26, 0);
+
+        for(char c : magazine) {
+            freq[c - 'a']++;
+        }
+
+        for(char c : ransomNote) {
+
+            freq[c - 'a']--;
+
+            if(freq[c - 'a'] < 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+};
+
+Intuition ->
+
+Count how many times each character appears in magazine.
+
+Then consume characters while traversing ransomNote.
+
+If any character's frequency becomes negative,
+
+that character was needed more times than it existed.
+
+So construction is impossible.
+
+Complexity Analysis ->
+
+Time Complexity -> O(n + m)
+
+where:
+
+n = length of ransomNote
+
+m = length of magazine
+
+Reason:
+
+One traversal of magazine.
+
+One traversal of ransomNote.
+
+Space Complexity -> O(1)
+
+Reason:
+
+Only a frequency array of size 26 is used.
+
+------------------------------------------------------------
+
+Dry Run of Optimal Approach
+
+Input
+
+ransomNote = "aa"
+
+magazine = "aab"
+
+Initially
+
+freq =
+
+a = 0
+
+b = 0
+
+...
+
+Count magazine
+
+'a'
+
+freq[a] = 1
+
+'a'
+
+freq[a] = 2
+
+'b'
+
+freq[b] = 1
+
+Current
+
+a = 2
+
+b = 1
+
+Traverse ransomNote
+
+Character = 'a'
+
+freq[a]--
+
+freq[a] = 1
+
+Still non-negative.
+
+Continue.
+
+Character = 'a'
+
+freq[a]--
+
+freq[a] = 0
+
+Still non-negative.
+
+Finished.
+
+Return
+
+true
+
+------------------------------------------------------------
+
+Corner Cases
+
+1. Character Missing
+
+ransomNote = "a"
+
+magazine = "b"
+
+Output:
+
+false
+
+------------------------------------------------------------
+
+2. Not Enough Frequency
+
+ransomNote = "aa"
+
+magazine = "ab"
+
+Output:
+
+false
+
+------------------------------------------------------------
+
+3. Enough Frequency
+
+ransomNote = "aa"
+
+magazine = "aab"
+
+Output:
+
+true
+
+------------------------------------------------------------
+
+4. Empty ransomNote
+
+ransomNote = ""
+
+magazine = "abc"
+
+Output:
+
+true
+
+------------------------------------------------------------
+
+5. Empty magazine
+
+ransomNote = "a"
+
+magazine = ""
+
+Output:
+
+false
+
+------------------------------------------------------------
+
+Pattern Recognition
+
+📌 Hashing / Frequency Counting
+
+Key Observation:
+
+We don't care about the positions of characters.
+
+We only care how many times each character appears.
+
+Counting frequencies lets us verify availability in linear time.
+
+------------------------------------------------------------
+
+Interview Insight
+
+Whenever a problem asks:
+
+"Can I construct one string from another?"
+
+or
+
+"Are there enough occurrences of each element?"
+
+think about using a frequency array or hash map instead of repeatedly searching through the string.
