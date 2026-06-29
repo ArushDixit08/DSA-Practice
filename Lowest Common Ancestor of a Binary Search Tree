@@ -1,0 +1,267 @@
+//235. 
+//Given a Binary Search Tree (BST), find the Lowest Common Ancestor (LCA)
+//of two given nodes p and q.
+//A node can be a descendant of itself.
+//Example 1:
+//Input: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8
+//Output: 6
+//Example 2:
+//Input: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 4
+//Output: 2
+//Example 3:
+//Input: root = [2,1], p = 2, q = 1
+//Output: 2
+
+
+Brute Force Approach -> (Store Root-to-Node Paths)
+
+class Solution {
+public:
+    bool findPath(TreeNode* root, TreeNode* target, vector<TreeNode*>& path) {
+        if(root == nullptr)
+            return false;
+        path.push_back(root);
+        if(root == target)
+            return true;
+        if(findPath(root->left, target, path) ||
+           findPath(root->right, target, path))
+            return true;
+        path.pop_back();
+        return false;
+    }
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        vector<TreeNode*> pathP;
+        vector<TreeNode*> pathQ;
+        findPath(root, p, pathP);
+        findPath(root, q, pathQ);
+        TreeNode* ans = nullptr;
+        int i = 0;
+        while(i < pathP.size() &&
+              i < pathQ.size() &&
+              pathP[i] == pathQ[i]) {
+            ans = pathP[i];
+            i++;
+        }
+        return ans;
+    }
+};
+
+Intuition ->
+
+Find the path from the root to p.
+
+Find the path from the root to q.
+
+The last common node in both paths is the Lowest Common Ancestor.
+
+Complexity Analysis ->
+
+Time Complexity -> O(n)
+
+Reason:
+
+Each DFS may visit every node.
+
+Space Complexity -> O(n)
+
+Reason:
+
+Recursive stack + storing both paths.
+
+------------------------------------------------------------
+
+Optimal Approach -> (Use BST Property)
+
+class Solution {
+public:
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+
+        while(root) {
+
+            if(p->val < root->val &&
+               q->val < root->val) {
+
+                root = root->left;
+            }
+
+            else if(p->val > root->val &&
+                    q->val > root->val) {
+
+                root = root->right;
+            }
+
+            else {
+
+                return root;
+            }
+        }
+
+        return nullptr;
+    }
+};
+
+Intuition ->
+
+A BST has the property:
+
+Left subtree values < Root < Right subtree values.
+
+If both p and q are smaller,
+
+move left.
+
+If both are larger,
+
+move right.
+
+Otherwise,
+
+the current node is exactly where the paths split,
+
+making it the Lowest Common Ancestor.
+
+Complexity Analysis ->
+
+Time Complexity -> O(h)
+
+where:
+
+h = height of BST
+
+Balanced BST:
+
+O(log n)
+
+Worst Case (Skewed Tree):
+
+O(n)
+
+Space Complexity -> O(1)
+
+Reason:
+
+No recursion or extra data structures are used.
+
+------------------------------------------------------------
+
+Dry Run of Optimal Approach
+
+Tree
+
+          6
+        /   \
+       2     8
+      / \   / \
+     0   4 7   9
+        / \
+       3   5
+
+p = 2
+
+q = 8
+
+Current Root = 6
+
+2 < 6
+
+8 > 6
+
+They lie on different sides.
+
+Therefore,
+
+6
+
+is the LCA.
+
+Return:
+
+6
+
+------------------------------------------------------------
+
+Example 2
+
+p = 2
+
+q = 4
+
+Current Root = 6
+
+Both smaller.
+
+Move left.
+
+Current Root = 2
+
+One node equals the current root.
+
+A node can be its own ancestor.
+
+Return:
+
+2
+
+------------------------------------------------------------
+
+Corner Cases
+
+1. Root is LCA
+
+Output:
+
+Root
+
+------------------------------------------------------------
+
+2. One node is ancestor of the other
+
+Return:
+
+Ancestor node
+
+------------------------------------------------------------
+
+3. Tree with only two nodes
+
+Works correctly.
+
+------------------------------------------------------------
+
+4. Skewed BST
+
+Still works correctly.
+
+Time becomes O(n).
+
+------------------------------------------------------------
+
+Pattern Recognition
+
+📌 Binary Search Tree
+
+📌 Tree Traversal
+
+Key Observation:
+
+Unlike a normal binary tree,
+
+a BST lets us eliminate half the tree at every step using node values.
+
+------------------------------------------------------------
+
+Interview Insight
+
+The trick is to use the BST property.
+
+You never need to search both subtrees.
+
+If both nodes lie on the same side,
+
+move there.
+
+Otherwise,
+
+you've found the point where their paths diverge,
+
+which is the Lowest Common Ancestor.
