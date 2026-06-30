@@ -1,0 +1,324 @@
+//21. Merge Two Sorted Lists
+//You are given the heads of two sorted linked lists.
+//Merge the two lists into one sorted linked list.
+//The merged list should be made by splicing together the nodes of the first two lists.
+//Return the head of the merged linked list.
+//Example 1:
+//Input: list1 = [1,2,4], list2 = [1,3,4]
+//Output: [1,1,2,3,4,4]
+//Example 2:
+//Input: list1 = [], list2 = []
+//Output: []
+//Example 3:
+//Input: list1 = [], list2 = [0]
+//Output: [0]
+
+
+Brute Force Approach -> (Store Values + Sort)
+
+class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
+        vector<int> values;
+        while(list1) {
+            values.push_back(list1->val);
+            list1 = list1->next;
+        }
+        while(list2) {
+            values.push_back(list2->val);
+            list2 = list2->next;
+        }
+        sort(values.begin(), values.end());
+        ListNode dummy(0);
+        ListNode* curr = &dummy;
+        for(int val : values) {
+            curr->next = new ListNode(val);
+            curr = curr->next;
+        }
+        return dummy.next;
+    }
+};
+
+Intuition ->
+
+Store all values from both linked lists.
+
+Sort them.
+
+Create a new linked list using the sorted values.
+
+Complexity Analysis ->
+
+Time Complexity -> O((n + m) log(n + m))
+
+where:
+
+n = number of nodes in list1
+
+m = number of nodes in list2
+
+Reason:
+
+Sorting dominates the complexity.
+
+Space Complexity -> O(n + m)
+
+Reason:
+
+Extra vector stores all node values.
+
+------------------------------------------------------------
+
+Optimal Approach -> (Two Pointers)
+
+class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
+
+        ListNode dummy(0);
+        ListNode* tail = &dummy;
+
+        while(list1 && list2) {
+
+            if(list1->val <= list2->val) {
+
+                tail->next = list1;
+                list1 = list1->next;
+            }
+
+            else {
+
+                tail->next = list2;
+                list2 = list2->next;
+            }
+
+            tail = tail->next;
+        }
+
+        if(list1)
+            tail->next = list1;
+
+        else
+            tail->next = list2;
+
+        return dummy.next;
+    }
+};
+
+Intuition ->
+
+Since both lists are already sorted,
+
+compare their current nodes.
+
+Attach the smaller node to the merged list.
+
+Move the corresponding pointer forward.
+
+Once one list is exhausted,
+
+attach the remaining nodes from the other list.
+
+Complexity Analysis ->
+
+Time Complexity -> O(n + m)
+
+where:
+
+n = number of nodes in list1
+
+m = number of nodes in list2
+
+Reason:
+
+Each node is visited exactly once.
+
+Space Complexity -> O(1)
+
+Reason:
+
+Only a dummy node and a few pointers are used.
+
+------------------------------------------------------------
+
+Dry Run of Optimal Approach
+
+Input
+
+list1
+
+1 -> 2 -> 4
+
+list2
+
+1 -> 3 -> 4
+
+Create dummy
+
+dummy
+
+tail
+
+↓
+
+NULL
+
+------------------------------------------------------------
+
+Compare
+
+1 and 1
+
+Take list1
+
+Merged
+
+1
+
+tail
+
+↓
+
+1
+
+------------------------------------------------------------
+
+Compare
+
+2 and 1
+
+Take list2
+
+Merged
+
+1 -> 1
+
+------------------------------------------------------------
+
+Compare
+
+2 and 3
+
+Take list1
+
+Merged
+
+1 -> 1 -> 2
+
+------------------------------------------------------------
+
+Compare
+
+4 and 3
+
+Take list2
+
+Merged
+
+1 -> 1 -> 2 -> 3
+
+------------------------------------------------------------
+
+Compare
+
+4 and 4
+
+Take list1
+
+Merged
+
+1 -> 1 -> 2 -> 3 -> 4
+
+------------------------------------------------------------
+
+list1 becomes NULL
+
+Attach remaining list2
+
+Merged
+
+1 -> 1 -> 2 -> 3 -> 4 -> 4
+
+Return
+
+dummy.next
+
+------------------------------------------------------------
+
+Corner Cases
+
+1. Both Lists Empty
+
+list1 = []
+
+list2 = []
+
+Output:
+
+[]
+
+------------------------------------------------------------
+
+2. First List Empty
+
+list1 = []
+
+list2 = [0]
+
+Output:
+
+[0]
+
+------------------------------------------------------------
+
+3. Second List Empty
+
+list1 = [1]
+
+list2 = []
+
+Output:
+
+[1]
+
+------------------------------------------------------------
+
+4. Same Values
+
+list1 = [1,1]
+
+list2 = [1,1]
+
+Output:
+
+[1,1,1,1]
+
+------------------------------------------------------------
+
+5. Different Lengths
+
+Works correctly.
+
+------------------------------------------------------------
+
+Pattern Recognition
+
+📌 Linked List + Two Pointers
+
+Key Observation:
+
+Both linked lists are already sorted.
+
+Instead of creating a new ordering,
+
+we simply compare the front nodes and repeatedly attach the smaller one.
+
+------------------------------------------------------------
+
+Interview Insight
+
+This is one of the most fundamental linked list problems.
+
+The dummy node simplifies handling the head of the merged list,
+
+while two pointers allow us to merge both lists in linear time without extra space.
