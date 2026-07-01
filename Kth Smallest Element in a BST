@@ -1,0 +1,231 @@
+//230. Kth Smallest Element in a BST
+//Given the root of a Binary Search Tree (BST) and an integer k,
+//return the kth smallest value (1-indexed).
+//Example 1:
+//Input: root = [3,1,4,null,2], k = 1
+//Output: 1
+//Example 2:
+//Input: root = [5,3,6,2,4,null,null,1], k = 3
+//Output: 3
+
+
+Brute Force Approach -> (Store Inorder Traversal)
+
+class Solution {
+public:
+    void inorder(TreeNode* root, vector<int>& values) {
+        if(root == nullptr)
+            return;
+        inorder(root->left, values);
+        values.push_back(root->val);
+        inorder(root->right, values);
+    }
+    int kthSmallest(TreeNode* root, int k) {
+        vector<int> values;
+        inorder(root, values);
+        return values[k - 1];
+    }
+};
+
+Intuition ->
+
+Perform an inorder traversal of the BST.
+
+Since inorder traversal of a BST produces nodes in sorted order,
+
+store all values in a vector.
+
+The kth smallest element is simply the (k - 1)th index.
+
+Complexity Analysis ->
+
+Time Complexity -> O(n)
+
+Reason:
+
+Every node is visited once.
+
+Space Complexity -> O(n)
+
+Reason:
+
+The inorder traversal stores every node in a vector.
+
+------------------------------------------------------------
+
+Optimal Approach -> (Inorder Traversal + Counter)
+
+class Solution {
+public:
+
+    int count = 0;
+    int ans = 0;
+
+    void inorder(TreeNode* root, int k) {
+
+        if(root == nullptr)
+            return;
+
+        inorder(root->left, k);
+
+        count++;
+
+        if(count == k) {
+            ans = root->val;
+            return;
+        }
+
+        inorder(root->right, k);
+    }
+
+    int kthSmallest(TreeNode* root, int k) {
+
+        inorder(root, k);
+
+        return ans;
+    }
+};
+
+Intuition ->
+
+A BST's inorder traversal visits nodes in ascending order.
+
+Instead of storing every value,
+
+count the visited nodes.
+
+When the count becomes k,
+
+the current node is the kth smallest.
+
+Complexity Analysis ->
+
+Time Complexity -> O(n)
+
+Reason:
+
+In the worst case, every node may be visited.
+
+Space Complexity -> O(h)
+
+where:
+
+h = height of the tree
+
+Reason:
+
+Only the recursive call stack is used.
+
+Balanced BST:
+
+O(log n)
+
+Worst Case (Skewed Tree):
+
+O(n)
+
+------------------------------------------------------------
+
+Dry Run of Optimal Approach
+
+Tree
+
+        5
+      /   \
+     3     6
+    / \
+   2   4
+  /
+ 1
+
+k = 3
+
+Inorder Traversal
+
+1
+
+count = 1
+
+----------------------------
+
+2
+
+count = 2
+
+----------------------------
+
+3
+
+count = 3
+
+Found kth smallest.
+
+Return
+
+3
+
+------------------------------------------------------------
+
+Corner Cases
+
+1. k = 1
+
+Return the smallest node.
+
+------------------------------------------------------------
+
+2. k = n
+
+Return the largest node.
+
+------------------------------------------------------------
+
+3. Single Node
+
+Tree
+
+1
+
+k = 1
+
+Output
+
+1
+
+------------------------------------------------------------
+
+4. Skewed BST
+
+Works correctly.
+
+------------------------------------------------------------
+
+Pattern Recognition
+
+📌 Binary Search Tree
+
+📌 Inorder Traversal
+
+Key Observation:
+
+Inorder traversal of a BST always visits nodes in sorted order.
+
+Therefore,
+
+the kth visited node is exactly the kth smallest element.
+
+------------------------------------------------------------
+
+Interview Insight
+
+The biggest clue is the phrase:
+
+"Binary Search Tree."
+
+Immediately think:
+
+**Inorder Traversal = Sorted Order**
+
+Instead of sorting values afterward,
+
+use the traversal order itself to find the answer.
